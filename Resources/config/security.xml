@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="beeldspraak_secured_area.page_request_matcher.class">Beeldspraak\SecuredAreaBundle\Security\Authentication\PageRequestMatcher</parameter>
+        <parameter key="beeldspraak_secured_area.security.access.page_voter.class">Beeldspraak\SecuredAreaBundle\Security\Authorization\Voter\PageVoter</parameter>
+    </parameters>
+
+    <services>
+
+        <!-- Access checker -->
+        <service id="beeldspraak_secured_area.access_checker" class="Beeldspraak\SecuredAreaBundle\Security\SecurityChecker">
+            <argument>%beeldspraak_secured_area.role%</argument>
+            <argument type="service" id="security.context" on-invalid="ignore"/>
+        </service>
+
+        <!-- Authentication related services -->
+        <service id="beeldspraak_secured_area.page_request_matcher"
+                 class="%beeldspraak_secured_area.page_request_matcher.class%"
+                 public="false">
+
+            <argument type="service" id="doctrine_phpcr.odm.document_manager"/>
+            <argument>%beeldspraak_secured_area.login_routes%</argument>
+        </service>
+
+        <!-- Security Voters -->
+        <service id="beeldspraak_secured_area.security.access.page_voter"
+                 class="%beeldspraak_secured_area.security.access.page_voter.class%" public="false">
+            <tag name="security.voter" />
+
+            <argument>%beeldspraak_secured_area.role%</argument>
+        </service>
+
+    </services>
+</container>
